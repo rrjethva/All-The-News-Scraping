@@ -1,57 +1,38 @@
-var express = require("express");
-var logger = require("morgan");
-var mongoose = require("mongoose");
+const express = require('express');
+const bParser = require('body-parser');
+const logger = require('morgan');
+const mongoose = require('mongoose');
+const eHandle = require('express-handlebars');
 
-// Require all models
-var db = require("./models");
+let PORT = process.env.PORT || 3000;
+let MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost/news_scraper';
 
-// Set the port of our application for use on Heroku and local 
-var PORT = process.env.PORT || 3001;
+// initialize express
+const app = express();
 
-// Initialize Express
-var app = express();
+// use morgan logger for logging requests
+app.use(logger('dev'));
+// use body-parser for handling form submissions
+app.use(bParser.urlencoded({ extended: true }));
+// set static directory
+app.use(express.static('public'));
+// Set Handlebars as the default templating engine
+app.engine('handlebars', eHandle({ defaultLayout: 'main' }));
+app.set('view engine', 'handlebars');
 
-// Set up Router
-var router = express.Router();
+// database configuration
+mongoose.Promise = Promise;
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
-// Routes
-// =============================================================
-require("./routes/html-routes.js")(router);
-require("./routes/scrape-api-routes.js")(router);
-require("./routes/comment-api-routes.js")(router);
-
-// Configure middleware
-
-// Use morgan logger for logging requests
-app.use(logger("dev"));
-// Parse request body as JSON
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-// Make public a static folder
-app.use(express.static("public"));
-
-// Set Handlebars.
-var exphbs = require("express-handlebars");
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
-app.set("view engine", "handlebars");
-
-// Get database  - deployed or local
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/newsarticles";
-// Connect to the Mongo DB
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true }, function (error) {
-    if (error) {
-        console.log(error)
-    } else {
-        console.log("mongoose successful connection")
-    };
+// check connection status
+let db = mongoose.connection;
+db.on('error', (error) => {
+    console.log(`Connection error ${error}`);
 });
 
-mongoose.set('useCreateIndex', true);
+require('./routes/routes.js')(app);
 
-// user router
-app.use(router);
-
-// Start the server
-app.listen(PORT, function () {
-    console.log("App running on port " + PORT + "!");
+// start server
+app.listen(PORT, () => {
+    console.log(`App running on port ${PORT}`);
 });
