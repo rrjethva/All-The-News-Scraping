@@ -43,6 +43,7 @@ module.exports = (app) => {
         axios.get('http://www.bbc.com/sport/football')
             .then((response) => {
                 // use cheerio for shorthand selector $
+                console.log(response.data);
                 let $ = cheerio.load(response.data);
 
                 $('.lakeside__content').each(function (i, element) {
