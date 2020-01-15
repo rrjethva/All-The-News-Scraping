@@ -15,7 +15,7 @@ $(() => {
             method: 'PUT'
         })
             .then((data) => {
-                location.reload();
+                location.reload(data);
             });
     };
 
@@ -27,7 +27,7 @@ $(() => {
             method: 'PUT'
         })
             .then((data) => {
-                location.reload();
+                location.reload(data);
             });
     };
 
@@ -41,21 +41,22 @@ $(() => {
         })
             .then((data) => {
                 // create modal with article id
-                $('.modal-content').html(`
-                <div class="modal-header">
-                    <h5 class="modal-title">${data.title}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <ul class="list-group"></ul>
-                    <textarea name="note" class="note-content"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" data-id="${data._id}" class="btn btn-primary btn-save-note">Save Note</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>`
+
+                $('.modal-content').html(
+                    `<div class="modal-header">
+                        <h5 class="modal-title">${data.title}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group"></ul>
+                        <textarea name="note" class="note-content"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" data-id="${data._id}" class="btn btn-primary btn-save-note">Save Note</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>`
                 );
 
                 let totalNotes = data.note.length;

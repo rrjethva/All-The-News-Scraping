@@ -43,27 +43,32 @@ module.exports = (app) => {
         axios.get('http://www.bbc.com/sport/football')
             .then((response) => {
                 // use cheerio for shorthand selector $
-                console.log(response.data);
+                // console.log(response.data);
                 let $ = cheerio.load(response.data);
 
-                $('.lakeside__content').each(function (i, element) {
+                $('div.gs-c-promo').each(function (i, element) {
                     let result = {};
-                    const title = $(this).children('h3').children('a').children('span').text();
-                    const link = $(this).children('h3').children('a').attr('href');
-                    const summary = $(this).children('p').text();
+                    const title = $(this).attr('data-bbc-title');
+                    const link = $(this).attr('data-bbc-result');
+                    // const summary = $(this).children('p').text();
 
                     result.title = title;
                     result.link = link;
-                    result.summary = summary;
-
+                    // result.summary = summary;
+                    console.log(result.title);
+                    console.log(link);
+                    // console.log(summary);
                     // create new Article
-                    db.Article.create(result)
-                        .then((dbArticle) => {
-                            console.log(`\narticle scraped: ${dbArticle}`);
-                        })
-                        .catch((err) => {
-                            console.log(`\nerror while saving to database: ${err}`);
-                        });
+                    if (result.title && result.link) {
+                        db.Article.create(result)
+                            .then((dbArticle) => {
+                                console.log(`\narticle scraped: ${dbArticle}`);
+                            })
+                            .catch((err) => {
+                                console.log(`\nerror while saving to database: ${err}`);
+                            });
+                    }
+
                 });
 
                 res.redirect('/articles');
