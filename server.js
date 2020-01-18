@@ -22,7 +22,7 @@ app.set('view engine', 'handlebars');
 
 // database configuration
 mongoose.Promise = Promise;
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // check connection status
 let db = mongoose.connection;
